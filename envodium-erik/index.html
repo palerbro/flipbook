@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0d12">
+<title>Ship It — Developer Challenge</title>
+<style>
+:root{
+  --bg:#080a0f;--panel:#0d1118;--panel2:#111721;--line:#202a38;
+  --text:#ecf2f8;--muted:#7f8b9c;--green:#72f5a5;--cyan:#6bdcff;
+  --amber:#f7c76a;--red:#ff7085;--violet:#aa8cff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(900px 550px at 15% -10%,rgba(107,220,255,.08),transparent 60%),
+    radial-gradient(900px 550px at 100% 0%,rgba(114,245,165,.055),transparent 60%),
+    #080a0f;
+}
+button{font:inherit}
+.app{min-height:100vh;padding:28px}
+.shell{width:min(1180px,100%);margin:0 auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;display:grid;place-items:center;background:#0d1219;color:var(--green);font:700 14px ui-monospace,SFMono-Regular,Consolas,monospace}
+.brand b{display:block;font-size:14px;letter-spacing:.01em}
+.brand span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.topmeta{font:500 11px ui-monospace,SFMono-Regular,Consolas,monospace;color:#687486}
+.window{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0a0e14;box-shadow:0 35px 100px rgba(0,0,0,.38)}
+.chrome{height:43px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#0d1118;color:#667487;font:500 10px ui-monospace,SFMono-Regular,Consolas,monospace}
+.dots{display:flex;gap:6px}.dots i{width:8px;height:8px;border-radius:50%;background:#283240}.dots i:nth-child(1){background:#ff6675}.dots i:nth-child(2){background:#f5c663}.dots i:nth-child(3){background:#65d98d}
+.grid{display:grid;grid-template-columns:210px minmax(0,1fr) 310px;min-height:655px}
+.sidebar{border-right:1px solid var(--line);background:#0b0f15}
+.right{border-left:1px solid var(--line);background:#0b0f15}
+.panel-title{padding:12px 13px;border-bottom:1px solid var(--line);color:#617084;font:600 10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase}
+.files{padding:9px}.file{padding:9px 10px;border-radius:6px;color:#6e7b8e;font:500 12px ui-monospace,SFMono-Regular,Consolas,monospace;margin-bottom:2px;display:flex;justify-content:space-between;gap:8px}
+.file.active{background:#121a24;color:var(--cyan)}.file.done{color:#779583}.file.done em{color:var(--green);font-style:normal}
+.main{min-width:0;display:flex;flex-direction:column}
+.mission{padding:22px 24px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#10151d,#0d1219)}
+.eyebrow{color:var(--cyan);font:700 10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase}
+.mission h1{margin:8px 0 8px;font-size:clamp(24px,3vw,34px);letter-spacing:-.035em}
+.mission p{margin:0;color:#8d99aa;font-size:13px;line-height:1.65;max-width:760px}
+.editor{display:grid;grid-template-columns:48px minmax(0,1fr);min-height:330px;flex:1;background:#090d13}
+.nums{padding:18px 9px;text-align:right;border-right:1px solid #17202b;color:#394657;white-space:pre;font:12px/1.75 ui-monospace,SFMono-Regular,Consolas,monospace;user-select:none}
+.code{padding:18px 20px;white-space:pre-wrap;overflow:auto;font:12.5px/1.75 ui-monospace,SFMono-Regular,Consolas,monospace;color:#cdd8e5}
+.kw{color:#c792ea}.fn{color:#82d9ff}.str{color:#b7d77d}.com{color:#596779}.bad{display:inline-block;background:rgba(255,112,133,.07);color:#ff9cad}
+.choices{padding:14px;border-top:1px solid var(--line);background:#0d1219;display:grid;gap:8px}
+.choices-label{color:#5f6e80;font:600 10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.11em}
+.choice{appearance:none;text-align:left;border:1px solid #263244;background:#101720;color:#b9c6d4;padding:11px 12px;border-radius:7px;cursor:pointer;font:500 11.5px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;transition:.15s ease}
+.choice:hover{border-color:#3b526d;background:#121b27;color:#edf4fb}.choice.correct{border-color:#2b6f48;background:#102119;color:var(--green)}.choice.wrong{border-color:#713442;background:#211117;color:#ff8496}.choice:disabled{cursor:default}
+.tests{padding:10px}.test{border:1px solid #222e3e;background:#0e141c;border-radius:7px;padding:10px;margin-bottom:8px}
+.test b{display:block;color:#8291a4;font:600 10px ui-monospace,SFMono-Regular,Consolas,monospace;margin-bottom:4px}.test span{color:#536176;font:500 10px ui-monospace,SFMono-Regular,Consolas,monospace}.test.pass{border-color:#285d3d}.test.pass b{color:var(--green)}
+.console{height:245px;border-top:1px solid var(--line);padding:12px;overflow:auto;color:#6f8095;font:500 10.5px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}
+.console .ok{color:var(--green)}.console .err{color:var(--red)}.console .info{color:var(--cyan)}.console .warn{color:var(--amber)}
+.progress{height:4px;background:#0c1118}.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .35s ease}
+.intro,.final{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:rgba(5,7,11,.96);backdrop-filter:blur(12px)}
+.intro.hidden,.final{display:none}.final.show{display:grid}
+.card{width:min(760px,94vw);border:1px solid #202b3a;border-radius:18px;background:linear-gradient(180deg,#0f151e,#0a0e14);padding:48px;box-shadow:0 40px 120px rgba(0,0,0,.55)}
+.intro-code,.final-code{color:var(--cyan);font:700 10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.15em;text-transform:uppercase}
+.intro h2{margin:18px 0 10px;font-size:clamp(42px,8vw,76px);letter-spacing:-.07em}.intro h2 span{color:var(--green)}
+.intro .lead{font-size:18px;line-height:1.55;letter-spacing:-.01em;color:#c9d4e1;max-width:620px}
+.intro .sub{color:#78879a;line-height:1.65;font-size:13px;max-width:620px}
+.quote{margin:30px 0 26px;padding:15px 17px;border-left:2px solid #2d3e52;background:#0a1017;color:#8ea0b5;font:500 12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+.start{appearance:none;border:1px solid #2e6847;background:#112319;color:var(--green);padding:12px 17px;border-radius:8px;cursor:pointer;font:700 11px ui-monospace,SFMono-Regular,Consolas,monospace}
+.start:hover{border-color:#4b956c}
+.final .card{text-align:center;width:min(860px,94vw);padding:60px 48px}
+.deploy-line{color:var(--green);font:700 10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.15em}
+.final h2{margin:24px 0 5px;font-size:clamp(42px,8vw,82px);letter-spacing:-.07em}
+.arrow{color:#455264;margin:0 10px}.env{color:var(--green)}
+.role{color:#8090a4;font-size:14px;margin-top:12px}
+.message{margin:42px auto 0;max-width:700px;font-size:clamp(24px,4vw,42px);font-weight:750;line-height:1.08;letter-spacing:-.04em}
+.commit{margin:30px auto 0;text-align:left;max-width:560px;padding:16px 18px;border:1px solid #202b3a;border-radius:10px;background:#080c11;color:#738399;font:500 11px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace}
+.commit .g{color:var(--green)}.commit .w{color:#d9e4ef}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.sidebar{display:none}.right{border-left:0;border-top:1px solid var(--line)}.console{height:150px}}
+@media(max-width:620px){.app{padding:10px}.card{padding:30px 24px}.topmeta{display:none}.chrome>div:nth-child(2){display:none}.mission{padding:18px}.editor{grid-template-columns:38px minmax(0,1fr)}.code{padding:15px 13px;font-size:11.5px}.nums{padding:15px 7px}.final .card{padding:42px 22px}}
+</style>
+</head>
+<body>
+<div class="intro" id="intro">
+  <div class="card">
+    <div class="intro-code">candidate environment // build 26.10</div>
+    <h2>SHIP<span>IT.</span></h2>
+    <div class="lead">Four broken builds. One production branch. No Stack Overflow tab open.</div>
+    <div class="sub">Fix the issues, get the test suite green and ship the release. Nothing here is timed. Bad decisions are.</div>
+    <div class="quote">“There are only two hard things in Computer Science: cache invalidation, naming things, and off-by-one errors.”</div>
+    <button class="start" id="start">START CHALLENGE</button>
+  </div>
+</div>
+
+<div class="app">
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">&gt;_</div>
+      <div><b>Ship It</b><span>developer challenge</span></div>
+    </div>
+    <div class="topmeta">branch: candidate/main · node 22.18 · ci enabled</div>
+  </div>
+
+  <div class="window">
+    <div class="chrome">
+      <div class="dots"><i></i><i></i><i></i></div>
+      <div>workspace / candidate / assignment</div>
+      <div id="counter">01 / 04</div>
+    </div>
+
+    <div class="grid">
+      <aside class="sidebar">
+        <div class="panel-title">Explorer</div>
+        <div class="files" id="files"></div>
+      </aside>
+
+      <main class="main">
+        <section class="mission">
+          <div class="eyebrow" id="eyebrow">Issue 01</div>
+          <h1 id="title"></h1>
+          <p id="desc"></p>
+        </section>
+        <div class="editor">
+          <div class="nums" id="nums"></div>
+          <div class="code" id="code"></div>
+        </div>
+        <div class="choices" id="choices"></div>
+      </main>
+
+      <aside class="right">
+        <div class="panel-title">Test runner</div>
+        <div class="tests" id="tests"></div>
+        <div class="console" id="console"></div>
+      </aside>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+  </div>
+</div>
+</div>
+
+<div class="final" id="final">
+  <div class="card">
+    <div class="final-code">production deploy // successful</div>
+    <h2>ERIK <span class="arrow">→</span> <span class="env">ENVODIUM</span></h2>
+    <div class="role">Senior Webb- &amp; Systemutvecklare</div>
+    <div class="message">Grattis till nya tjänsten, madafacka.</div>
+    <div class="commit"><span class="g">commit a11ce55</span><br>
+Author: <span class="w">Erik Wallberg</span><br>
+Branch: <span class="w">envodium/main</span><br>
+Status: <span class="g">all checks passed</span><br>
+Message: <span class="w">feat: unlock next chapter</span></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var levels=[
+    {
+      file:"user.service.ts",
+      title:"The optional user",
+      desc:"A guest user crashes the profile header. Pick the smallest safe patch without changing valid-user behaviour.",
+      code:[
+        '<span class="kw">export function</span> <span class="fn">displayName</span>(user) {',
+        '  <span class="kw">return</span> user.profile.name;',
+        '}',
+        '',
+        '<span class="com">// guest users may be null</span>',
+        '<span class="bad">displayName(null);</span>'
+      ],
+      options:[
+        ['return user?.profile?.name ?? "Guest";',true],
+        ['return user.profile && "Guest";',false],
+        ['try { return user.profile.name } catch { return null }',false]
+      ],
+      tests:['keeps existing names','handles null guest','avoids TypeError']
+    },
+    {
+      file:"price.util.ts",
+      title:"Percent means percent",
+      desc:"The checkout receives 25 for a 25% discount. Production is currently feeling very generous.",
+      code:[
+        '<span class="kw">export function</span> <span class="fn">applyDiscount</span>(price, percent) {',
+        '  <span class="kw">return</span> price - (price * percent);',
+        '}',
+        '',
+        '<span class="com">// applyDiscount(1000, 25) should be 750</span>',
+        '<span class="bad">applyDiscount(1000, 25); <span class="com">// -24000</span></span>'
+      ],
+      options:[
+        ['return price - (price * percent / 100);',true],
+        ['return Math.abs(price - price * percent);',false],
+        ['return price / percent;',false]
+      ],
+      tests:['25% => 750','0% preserves value','100% => 0']
+    },
+    {
+      file:"api.client.ts",
+      title:"Promise in, object out",
+      desc:"The UI gets a Promise where it expects a user object. Fix the async flow rather than the symptom.",
+      code:[
+        '<span class="kw">async function</span> <span class="fn">loadUser</span>() {',
+        '  <span class="kw">const</span> response = fetch(<span class="str">"/api/user"</span>);',
+        '  <span class="kw">const</span> data = response.json();',
+        '  <span class="kw">return</span> data;',
+        '}',
+        '',
+        '<span class="bad">render(await loadUser());</span>'
+      ],
+      options:[
+        ['const response = await fetch("/api/user"); const data = await response.json();',true],
+        ['const response = fetch("/api/user").json();',false],
+        ['return JSON.stringify(fetch("/api/user"));',false]
+      ],
+      tests:['awaits fetch','awaits json parse','returns user object']
+    },
+    {
+      file:"release.yml",
+      title:"The last green button",
+      desc:"Tests are green, build is clean and production is waiting. Choose the only respectable final step.",
+      code:[
+        '<span class="com"># release pipeline</span>',
+        'npm ci',
+        'npm test',
+        'npm run build',
+        'git status --porcelain',
+        '',
+        '<span class="bad"># next?</span>'
+      ],
+      options:[
+        ['git push origin main && deploy production',true],
+        ['console.log("works on my machine")',false],
+        ['rm -rf node_modules && go home',false]
+      ],
+      tests:['test suite green','build artifact ready','deployment reachable']
+    }
+  ];
+
+  var current=0, solved=[false,false,false,false], locked=false;
+  function q(id){return document.getElementById(id)}
+  function log(text,cls){
+    var d=document.createElement('div');
+    d.className=cls||'';
+    d.textContent='> '+text;
+    q('console').appendChild(d);
+    q('console').scrollTop=q('console').scrollHeight;
+  }
+  function drawFiles(){
+    q('files').innerHTML='';
+    levels.forEach(function(l,i){
+      var d=document.createElement('div');
+      d.className='file'+(i===current?' active':solved[i]?' done':'');
+      d.innerHTML='<span>'+l.file+'</span>'+(solved[i]?'<em>✓</em>':'');
+      q('files').appendChild(d);
+    });
+  }
+  function drawTests(pass){
+    var L=levels[current];
+    q('tests').innerHTML='';
+    L.tests.forEach(function(t){
+      var d=document.createElement('div');
+      d.className='test'+(pass?' pass':'');
+      d.innerHTML='<b>'+(pass?'PASS':'WAIT')+' · '+t+'</b><span>'+(pass?'completed':'pending')+'</span>';
+      q('tests').appendChild(d);
+    });
+  }
+  function render(){
+    locked=false;
+    var L=levels[current];
+    q('counter').textContent=('0'+(current+1)).slice(-2)+' / 04';
+    q('eyebrow').textContent='Issue '+('0'+(current+1)).slice(-2)+' · '+L.file;
+    q('title').textContent=L.title;
+    q('desc').textContent=L.desc;
+    q('code').innerHTML=L.code.join('\n');
+    q('nums').textContent=L.code.map(function(_,i){return i+1}).join('\n');
+    drawFiles();drawTests(false);
+    q('choices').innerHTML='<div class="choices-label">SELECT PATCH</div>';
+    L.options.forEach(function(o,i){
+      var b=document.createElement('button');
+      b.className='choice';
+      b.textContent=String.fromCharCode(65+i)+'  '+o[0];
+      b.onclick=function(){answer(i,b)};
+      q('choices').appendChild(b);
+    });
+    q('bar').style.width=(solved.filter(Boolean).length/4*100)+'%';
+  }
+  function answer(i,button){
+    if(locked)return;
+    var L=levels[current];
+    if(!L.options[i][1]){
+      button.classList.add('wrong');
+      log(L.file+': patch rejected','err');
+      log('CI: confidence is good, correctness is better.','warn');
+      setTimeout(function(){button.classList.remove('wrong')},600);
+      return;
+    }
+    locked=true;
+    button.classList.add('correct');
+    Array.from(q('choices').querySelectorAll('button')).forEach(function(b){b.disabled=true});
+    solved[current]=true;drawTests(true);drawFiles();
+    q('bar').style.width=(solved.filter(Boolean).length/4*100)+'%';
+    log(L.file+': patch accepted','ok');
+    log('test suite '+L.tests.length+'/'+L.tests.length+' passed','ok');
+    setTimeout(function(){
+      if(current<3){
+        current++;
+        log('opening next issue...','info');
+        render();
+      }else{
+        log('all checks passed','ok');
+        log('deploying production...','info');
+        setTimeout(function(){q('final').classList.add('show')},900);
+      }
+    },1100);
+  }
+  q('start').onclick=function(){
+    q('intro').classList.add('hidden');
+    log('workspace ready','info');
+    log('4 issues detected','warn');
+    render();
+  };
+  render();
+})();
+</script>
+</body>
+</html>
